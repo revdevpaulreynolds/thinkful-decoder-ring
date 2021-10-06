@@ -4,7 +4,7 @@
 // of the anonymous function on line 6
 
 const substitutionModule = (function () {
-  // you can add any code you want within this function scope
+  // My first pass I hard coded the key, but then realized it was unnecessary
   // const key = { 
   //   a: 1, b: 2, c: 3, d: 4, e: 5, 
   //   f: 6, g: 7, h: 8, i: 9, j: 10,
@@ -14,12 +14,12 @@ const substitutionModule = (function () {
   // }
   const alphabetReference = 'abcdefghijklmnopqrstuvwxyz';
 
-  
+  // This turns the reference alphabet into an object where the key is the letter
   const key = alphabetReference.split('').reduce((acc, item) => 
     ({...acc, [item]: null}), {})
-  // console.log(makeAnObject)
 
-  function keyGenerator(suppliedKey) {
+  // This populates the encoding key with the values from the scrambled alphabet
+  const keyGenerator = suppliedKey => {
     let i = 0;
     for (letter of alphabetReference) {
       key[letter] = suppliedKey[i];
@@ -28,8 +28,8 @@ const substitutionModule = (function () {
     return key;
   }
 
-  function decodeKeyGenerator(suppliedKey) {
-   
+  // This flips the keys and values of the encoding key
+  const decodeKeyGenerator = suppliedKey => {
     let decodeKey = Object.keys(suppliedKey).reduce((acc, key) => {
       acc[suppliedKey[key]] = key;
       return acc;
@@ -37,16 +37,18 @@ const substitutionModule = (function () {
     return decodeKey;
   }
 
-  function substitution(input, alphabet, encode = true) {
-    if (!alphabet) return false;
-    if (alphabet.length !== 26) return false;
+  const substitution = (input, alphabet, encode = true) => {
+    if (!alphabet || alphabet.length !== 26) return false;
     const alphabetCheck = [...new Set(alphabet.split(''))];
     if (alphabetCheck.length !== 26) return false;
-    let newKey = keyGenerator(alphabet);
+    let key = keyGenerator(alphabet);
     if (!encode) {
-      newKey = decodeKeyGenerator(newKey);
+      key = decodeKeyGenerator(key);
     }
 
+    let unscrambled = input.split('').map(letter => key[letter] || ' ')
+    .join('');
+    return unscrambled;
 
     // found this at http://people.hsc.edu/faculty-staff/tomv/Coms161/SubstCipherJavaScript.htm
     // const permuted = alphabet;
@@ -59,21 +61,6 @@ const substitutionModule = (function () {
     //   i++;
     // }
     // return result;
-     
-
-    // read in alphabet
-    // store index locations of letters as values with the letters as keys?
-    // For encoding, I need to h
-    
-    // input = input.split('')
-    // if (encode) {
-    //   let scrambled = input.split('').map(letter => newKey[letter] || ' ').join('');
-    //   return scrambled;
-    // }    
-    // newKey = decodeKeyGenerator(newKey);
-    let unscrambled = input.split('').map(letter => newKey[letter] || ' ')
-      .join('');
-    return unscrambled;
     
   }
   return {
